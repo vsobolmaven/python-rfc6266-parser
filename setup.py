@@ -2,16 +2,16 @@
 from setuptools import setup
 
 setup(
-    author='Gabriel de Perthuis',
-    author_email='g2p.code+rfc6266@gmail.com',
+    author='Simon Woerner',
+    author_email='git@simon-woerner.de',
     description='Parse and generate Content-Disposition headers',
-    url='https://github.com/g2p/rfc6266',
-    keywords='rfc6266 Content-Disposition http attachments',
-    name='rfc6266',
-    version='0.0.4',  # semver
+    url='https://github.com/SWW13/python-rfc6266-parser',
+    keywords='rfc6266 parser Content-Disposition http attachments',
+    name='rfc6266-parser',
+    version='0.0.5-2',  # semver
     license='GNU LGPL',
     platforms='OS-independent',
-    py_modules=['rfc6266', 'test_rfc6266'],
+    py_modules=['rfc6266_parser', 'test_rfc6266_parser'],
     install_requires=['LEPL'],
     use_2to3=True,
     long_description=open('README').read(),

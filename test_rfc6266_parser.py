@@ -1,6 +1,6 @@
 # vim: set fileencoding=utf-8 sw=4 ts=4 et :
 
-from rfc6266 import (
+from rfc6266_parser import (
     parse_headers, parse_httplib2_response, parse_requests_response,
     build_header)
 import pytest

@@ -23,7 +23,7 @@ import os.path
 import re
 import sys
 
-LOGGER = logging.getLogger('rfc6266')
+LOGGER = logging.getLogger('rfc6266-parser')
 try:
     LOGGER.addHandler(logging.NullHandler())
 except AttributeError:

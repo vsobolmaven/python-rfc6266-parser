@@ -1,4 +1,5 @@
 *.pyc
-/build/
-/rfc6266.egg-info/
-/.tox/
+build/
+dist/
+rfc6266_parser.egg-info/
+.tox/
