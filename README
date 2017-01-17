@@ -48,7 +48,7 @@ To test compatibility across Python releases::
     tox
 
 rfc6266-parser is currently tested under Python 2.7, Python 2.6,
-Python 3.3, Python 3.2, and PyPy (1.7).
+Python 3.4, Python 3.3, and PyPy (1.7).
 
 .. image:: https://secure.travis-ci.org/SWW13/python-rfc6266-parser.png
    :target: https://secure.travis-ci.org/SWW13/python-rfc6266-parser
