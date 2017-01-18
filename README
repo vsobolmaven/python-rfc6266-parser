@@ -1,11 +1,18 @@
 
 rfc6266-parser
-~~~~~~~
+~~~~~~~~~~~~~~
 
 This module parses and generates HTTP ``Content-Disposition`` headers.
 These headers are used when getting resources for download;
 they provide a hint of whether the file should be downloaded,
 and of what filename to use when saving.
+
+difference rfc6266
+~~~~~~~~~~~~~~~~~~
+
+This module is a fork of rfc6266 which includes the latest bugfix
+'NullHandler should be an instance, not a class' and bumped the
+version to ``0.0.5``.
 
 Usage
 ~~~~~

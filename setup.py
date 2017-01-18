@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     author='Simon Woerner',
     author_email='git@simon-woerner.de',
-    description='Parse and generate Content-Disposition headers',
+    description='Parse and generate Content-Disposition headers; Fork of rfc6266 with bugfixes.',
     url='https://github.com/SWW13/python-rfc6266-parser',
     keywords='rfc6266 parser Content-Disposition http attachments',
     name='rfc6266-parser',
