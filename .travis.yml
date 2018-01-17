@@ -1,8 +1,20 @@
 language: python
+dist: trusty
+sudo: false
+
+python:
+  - "2.6"
+  - "2.7"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "pypy"
+  - "pypy3"
 
 install:
-- PIP_USE_MIRRORS=true PIP_DOWNLOAD_CACHE=~/.cache/pip pip install tox
+  - travis_retry pip install --upgrade pip
+  - travis_retry pip install tox pytest
 
 script:
-- PIP_USE_MIRRORS=true PIP_DOWNLOAD_CACHE=~/.cache/pip tox
-
+ - tox -e $(echo py$TRAVIS_PYTHON_VERSION | tr -d . | sed -e 's/pypypy/pypy/')
