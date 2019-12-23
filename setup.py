@@ -8,7 +8,7 @@ setup(
     url='https://github.com/SWW13/python-rfc6266-parser',
     keywords='rfc6266 parser Content-Disposition http attachments',
     name='rfc6266-parser',
-    version='0.0.5-2',  # semver
+    version='0.0.6',  # semver
     license='GNU LGPL',
     platforms='OS-independent',
     py_modules=['rfc6266_parser', 'test_rfc6266_parser'],
