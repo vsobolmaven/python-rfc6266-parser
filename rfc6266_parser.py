@@ -11,7 +11,10 @@ filename_unsafe, filename_sanitized.
 build_header handles the sender side.
 """
 
-from lepl import *
+from lepl import (
+    Any, AnyBut, Drop, DroppedSpace, FullFirstMatchException, Lookahead,
+    Optional, Regexp, Star,
+)
 from collections import namedtuple
 from urllib import quote, unquote
 from urlparse import urlsplit
