@@ -17,17 +17,10 @@ from urllib import quote, unquote
 from urlparse import urlsplit
 from string import hexdigits, ascii_letters, digits
 
-import logging
 import posixpath
 import os.path
 import re
 import sys
-
-LOGGER = logging.getLogger('rfc6266-parser')
-try:
-    LOGGER.addHandler(logging.NullHandler())
-except AttributeError:
-    pass
 
 __all__ = (
     'ContentDisposition',
@@ -175,9 +168,6 @@ def ensure_charset(text, encoding):
 def parse_headers(content_disposition, location=None, relaxed=False):
     """Build a ContentDisposition from header values.
     """
-
-    LOGGER.debug(
-        'Content-Disposition %r, Location %r', content_disposition, location)
 
     if content_disposition is None:
         return ContentDisposition(location=location)
