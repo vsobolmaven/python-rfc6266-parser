@@ -1,9 +1,9 @@
 # vim: set fileencoding=utf-8 sw=4 ts=4 et :
-
 from rfc6266_parser import (
-    parse_headers, parse_httplib2_response, parse_requests_response,
+    parse_headers, parse_requests_response,
     build_header)
 import pytest
+import sys
 
 
 def test_parsing():
@@ -12,7 +12,6 @@ def test_parsing():
     assert parse_headers('attachment; key=val').assocs['key'] == 'val'
     assert parse_headers(
         'attachment; filename=simple').filename_unsafe == 'simple'
-
     # test ISO-8859-1
     fname = parse_headers(u'attachment; filename="oyé"').filename_unsafe
     assert fname == u'oyé', repr(fname)
@@ -21,16 +20,6 @@ def test_parsing():
         'attachment; filename="EURO rates";'
         ' filename*=utf-8\'\'%e2%82%ac%20rates')
     assert cd.filename_unsafe == u'€ rates'
-
-
-@pytest.mark.skipif("(3,0) <= sys.version_info < (3,3)")
-def test_httplib2(httpserver):
-    httplib2 = pytest.importorskip('httplib2')
-    http = httplib2.Http()
-    httpserver.serve_content('eep', headers={
-        'Content-Disposition': 'attachment; filename="a b="'})
-    resp, content = http.request(httpserver.url)
-    assert parse_httplib2_response(resp).filename_unsafe == 'a b='
 
 
 @pytest.mark.skipif("(3,0) <= sys.version_info < (3,3)")
@@ -56,42 +45,25 @@ def test_location_fallback():
     ).filename_unsafe == u'étoilé'
 
 
-def test_strict():
-    # Trailing ; means the header is rejected
-    assert parse_headers('attachment;').disposition == 'inline'
-    assert parse_headers('attachment; key=val;').disposition == 'inline'
-    try:
-        cd = parse_headers(
-            'attachment; filename="spa  ced";')
-    except ValueError:
-        assert True
-    else:
-        assert False, cd
-
-
 def test_relaxed():
-    assert parse_headers(
-        'attachment;', relaxed=True).disposition == 'attachment'
-    assert parse_headers(
-        'attachment; key=val;', relaxed=True).disposition == 'attachment'
-    cd = parse_headers(
-        'attachment; filename="spa  ced";',
-        relaxed=True)
+    assert parse_headers('attachment;').disposition == 'attachment'
+    assert parse_headers('attachment; key=val;').disposition == 'attachment'
+    cd = parse_headers('attachment; filename="spa  ced";')
     assert cd.filename_unsafe == u'spa ced'
 
 
-
-def test_roundtrip():
+@pytest.mark.parametrize("name", [
+    'a b', 'a b ', ' a b', 'a\"b', u'aéio o♥u"qfsdf!'
+])
+def test_roundtrip(name):
     def roundtrip(filename):
-        return parse_headers(build_header(filename)).filename_unsafe
+        header = build_header(filename)
+        if sys.version_info >= (3,):
+            header = header.decode()
+
+        return parse_headers(header).filename_unsafe
 
     def assert_roundtrip(filename):
         assert roundtrip(filename) == filename
 
-    assert_roundtrip('a b')
-    assert_roundtrip('a   b')
-    assert_roundtrip('a b ')
-    assert_roundtrip(' a b')
-    assert_roundtrip('a\"b')
-    assert_roundtrip(u'aéio   o♥u"qfsdf!')
-
+    assert_roundtrip(name)
