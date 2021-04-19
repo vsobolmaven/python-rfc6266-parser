@@ -2,10 +2,10 @@
 from setuptools import setup
 
 setup(
-    author='Arseniy Baranov',
-    author_email='arseniy.baranov@gmail.com',
+    author='Uploadcare',
+    author_email='hello@uploadcare.com',
     description='Fork of rfc6266 package with python 3.6+ support',
-    url='https://github.com/genme/python-rfc6266-parser',
+    url='https://github.com/uploadcare/python-rfc6266-parser',
     keywords='rfc6266 parser Content-Disposition http attachments',
     name='rfc6266-parser',
     version='1.0.0',
