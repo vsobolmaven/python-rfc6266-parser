@@ -65,7 +65,4 @@ def test_roundtrip(name):
 
         return parse_headers(header).filename_unsafe
 
-    def assert_roundtrip(filename):
-        assert roundtrip(filename) == filename
-
-    assert_roundtrip(name)
+    assert roundtrip(name) == name
