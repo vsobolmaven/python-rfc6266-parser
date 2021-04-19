@@ -67,6 +67,7 @@ class ContentDisposition(object):
         """This constructor is used internally after parsing the header.
         Instances should generally be created from a factory
         function, such as parse_headers and its variants.
+        :type disposition: str
         """
 
         self.disposition = disposition
@@ -91,10 +92,7 @@ class ContentDisposition(object):
         dot for mime-sniffing.
         Saving it to a database is fine by itself though.
         """
-
-        if 'filename*' in self.assocs:
-            return self.assocs['filename*'].string
-        elif 'filename' in self.assocs:
+        if 'filename' in self.assocs:
             # XXX Reject non-ascii (parsed via qdtext) here?
             return self.assocs['filename']
         elif self.location is not None:
@@ -160,7 +158,9 @@ def ensure_charset(text, encoding):
 
 def parse_headers(content_disposition, location=None):
     """Build a ContentDisposition from header values.
-
+    :type content_disposition: str|unicode|None
+    :type location: str
+    :rtype: ContentDisposition
     """
 
     if content_disposition is None:
@@ -263,6 +263,10 @@ def build_header(
     to the document location (which can be percent-encoded utf-8
     if you control the URLs).
     See https://tools.ietf.org/html/rfc6266#appendix-D
+    :type disposition: str|unicode
+    :type filename: str|unicode
+
+    :rtype: bytes
     """
 
     # While this method exists, it could also sanitize the filename
