@@ -244,6 +244,16 @@ def qd_quote(text):
     return text.replace('\\', '\\\\').replace('"', '\\"')
 
 
+def check_latin1(f):
+    def decorator(*args, **kwargs):
+        result = f(*args, **kwargs)
+        result.encode('iso-8859-1')
+
+        return result
+    return decorator
+
+
+@check_latin1
 def build_header(
         filename, disposition='attachment', filename_compat=None
 ):
@@ -266,7 +276,7 @@ def build_header(
     :type disposition: str|unicode
     :type filename: str|unicode
 
-    :rtype: bytes
+    :rtype: str|unicode
     """
 
     # While this method exists, it could also sanitize the filename
@@ -279,14 +289,14 @@ def build_header(
 
     if is_token(filename):
         rv += '; filename=%s' % (filename,)
-        return rv.encode('iso-8859-1')
+        return rv
     elif is_ascii(filename) and is_lws_safe(filename):
         qd_filename = qd_quote(filename)
         rv += '; filename="%s"' % (qd_filename,)
         if qd_filename == filename:
             # RFC 6266 claims some implementations are iffy on qdtext's
             # backslash-escaping, we'll include filename* in that case.
-            return rv.encode('iso-8859-1')
+            return rv
     elif filename_compat:
         if is_token(filename_compat):
             rv += '; filename=%s' % (filename_compat,)
@@ -300,4 +310,4 @@ def build_header(
         filename, safe=attr_chars_nonalnum, encoding='utf-8'),)
 
     # This will only encode filename_compat, if it used non-ascii iso-8859-1.
-    return rv.encode('iso-8859-1')
+    return rv

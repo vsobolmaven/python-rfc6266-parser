@@ -3,7 +3,6 @@ from rfc6266_parser import (
     parse_headers, parse_requests_response,
     build_header)
 import pytest
-import sys
 
 
 def test_parsing():
@@ -59,10 +58,6 @@ def test_relaxed():
 ])
 def test_roundtrip(name):
     def roundtrip(filename):
-        header = build_header(filename)
-        if sys.version_info >= (3,):
-            header = header.decode()
-
-        return parse_headers(header).filename_unsafe
+        return parse_headers(build_header(filename)).filename_unsafe
 
     assert roundtrip(name) == name
