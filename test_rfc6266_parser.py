@@ -1,4 +1,4 @@
-# vim: set fileencoding=utf-8 sw=4 ts=4 et :
+# coding: utf-8
 from rfc6266_parser import (
     parse_headers, parse_requests_response,
     build_header)
@@ -57,7 +57,6 @@ def test_relaxed():
     'a b', 'a b ', ' a b', 'a\"b', u'aéio o♥u"qfsdf!'
 ])
 def test_roundtrip(name):
-    def roundtrip(filename):
-        return parse_headers(build_header(filename)).filename_unsafe
-
-    assert roundtrip(name) == name
+    header = build_header(name)
+    header = parse_headers(header)
+    assert header.filename_unsafe == name

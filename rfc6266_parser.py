@@ -1,4 +1,4 @@
-# vim: set fileencoding=utf-8 sw=4 ts=4 et :
+# coding: utf-8
 
 """Implements RFC 6266, the Content-Disposition HTTP header.
 parse_headers handles the receiver side.
@@ -8,6 +8,8 @@ It returns a ContentDisposition object with attributes like is_inline,
 filename_unsafe, filename_sanitized.
 build_header handles the sender side.
 """
+
+from __future__ import unicode_literals
 
 from collections import namedtuple
 from string import ascii_letters, digits
@@ -30,9 +32,10 @@ PY3K = sys.version_info >= (3,)
 LangTagged = namedtuple('LangTagged', 'string langtag')
 
 if PY3K:
-    from urllib.parse import urlsplit, unquote, quote
+    # only for type checking
+    unicode = str
 
-    xrange = range
+    from urllib.parse import urlsplit, unquote, quote
     # XXX Both implementations allow stray %
 
     def percent_encode(string, safe, encoding):
@@ -46,13 +49,11 @@ else:
     from urllib import quote, unquote
     from urlparse import urlsplit
 
-    def percent_encode(string, **kwargs):
-        encoding = kwargs.pop('encoding')
-        return quote(string.encode(encoding), **kwargs)
+    def percent_encode(string, safe, encoding):
+        return quote(string.encode(encoding), safe=safe.encode())
 
-    def percent_decode(string, **kwargs):
-        encoding = kwargs.pop('encoding')
-        return unquote(string, **kwargs).decode(encoding)
+    def percent_decode(string, encoding):
+        return unquote(string.encode(encoding)).decode(encoding)
 
 
 class ContentDisposition(object):
@@ -158,14 +159,22 @@ def ensure_charset(text, encoding):
 
 def parse_headers(content_disposition, location=None):
     """Build a ContentDisposition from header values.
-    :type content_disposition: str|unicode|None
-    :type location: str
+    :type content_disposition: unicode|None
+    :type location: unicode|None
     :rtype: ContentDisposition
     """
 
     if content_disposition is None:
         return ContentDisposition(location=location)
 
+    if not PY3K:
+        # parse_options_header uses urllib.unquote which have different implementation
+        # if unicode is passed. However, there could be proper unicode which is handled
+        # correctly
+        try:
+            content_disposition = content_disposition.encode('ascii')
+        except UnicodeEncodeError:
+            pass
     disposition, params = parse_options_header(normalize_ws(content_disposition))
 
     return ContentDisposition(
@@ -190,7 +199,7 @@ def parse_requests_response(response):
 
 # RFC 2616
 separator_chars = "()<>@,;:\\\"/[]?={} \t"
-ctl_chars = ''.join(chr(i) for i in xrange(32)) + chr(127)
+ctl_chars = ''.join(chr(i) for i in range(32)) + chr(127)
 nontoken_chars = separator_chars + ctl_chars
 
 # RFC 5987
@@ -237,7 +246,8 @@ def is_lws_safe(text):
 
 
 def normalize_ws(text):
-    return ' '.join(text.split())
+    # force native str type to prevent convertion to unicode in python2
+    return str(' ').join(text.split())
 
 
 def qd_quote(text):
@@ -273,10 +283,10 @@ def build_header(
     to the document location (which can be percent-encoded utf-8
     if you control the URLs).
     See https://tools.ietf.org/html/rfc6266#appendix-D
-    :type disposition: str|unicode
-    :type filename: str|unicode
 
-    :rtype: str|unicode
+    :type disposition: unicode
+    :type filename: unicode
+    :rtype: unicode
     """
 
     # While this method exists, it could also sanitize the filename
