@@ -12,7 +12,6 @@ build_header handles the sender side.
 from __future__ import unicode_literals
 
 from collections import namedtuple
-from string import ascii_letters, digits
 from werkzeug.http import parse_options_header
 
 import posixpath
@@ -149,14 +148,6 @@ class ContentDisposition(object):
             self.disposition, self.assocs, self.location)
 
 
-def ensure_charset(text, encoding):
-    if isinstance(text, bytes):
-        return text.decode(encoding)
-    else:
-        assert fits_inside_codec(text, encoding)
-        return text
-
-
 def parse_headers(content_disposition, location=None):
     """Build a ContentDisposition from header values.
     :type content_disposition: unicode|None
@@ -184,7 +175,6 @@ def parse_headers(content_disposition, location=None):
 def parse_httplib2_response(response):
     """Build a ContentDisposition from an httplib2 response.
     """
-
     return parse_headers(
         response.get('content-disposition'), response['content-location'])
 
@@ -192,22 +182,15 @@ def parse_httplib2_response(response):
 def parse_requests_response(response):
     """Build a ContentDisposition from a requests (PyPI) response.
     """
-
     return parse_headers(
         response.headers.get('content-disposition'), response.url)
 
 
 # RFC 2616
 separator_chars = "()<>@,;:\\\"/[]?={} \t"
-ctl_chars = ''.join(chr(i) for i in range(32)) + chr(127)
-nontoken_chars = separator_chars + ctl_chars
 
 # RFC 5987
 attr_chars_nonalnum = '!#$&+-.^_`|~'
-attr_chars = ascii_letters + digits + attr_chars_nonalnum
-
-# RFC 5987 gives this alternative construction of the token character class
-token_chars = attr_chars + "*'%"
 
 
 def is_token_char(ch):
@@ -218,27 +201,12 @@ def is_token_char(ch):
     return 31 < asciicode < 127 and ch not in separator_chars
 
 
-def usesonlycharsfrom(candidate, chars):
-    # Found that shortcut in urllib.quote
-    return candidate.rstrip(chars) == ''
-
-
 def is_token(candidate):
-    # return usesonlycharsfrom(candidate, token_chars)
     return all(is_token_char(ch) for ch in candidate)
 
 
 def is_ascii(text):
     return all(ord(ch) < 128 for ch in text)
-
-
-def fits_inside_codec(text, codec):
-    try:
-        text.encode(codec)
-    except UnicodeEncodeError:
-        return False
-    else:
-        return True
 
 
 def is_lws_safe(text):
