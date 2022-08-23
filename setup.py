@@ -12,7 +12,7 @@ setup(
     license='GNU LGPL',
     platforms='OS-independent',
     py_modules=['rfc6266_parser', 'test_rfc6266_parser'],
-    install_requires=['werkzeug~=1.0.1'],
+    install_requires=['werkzeug~=0.11.15'],
     extras_require={
         'dev': [
             'pytest==4.6.11',
